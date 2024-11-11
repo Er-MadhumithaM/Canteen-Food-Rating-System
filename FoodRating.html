@@ -353,7 +353,6 @@
 
 		<div id="thank-you-screen" class="container hidden">
 			<h2 id="message"></h2>
-			<button id="download-feedback">Download Feedback</button>
 		</div>
 
 		<div id="more-feedback-screen" class="container hidden">
@@ -618,38 +617,38 @@
 				showThankYouScreen(ratingValue);
 			});
 
-			document.getElementById("download-feedback").addEventListener("click", function () {
-    const feedbackData = JSON.parse(localStorage.getItem("canteenFeedback")) || [];
+			/*document.getElementById("download-feedback").addEventListener("click", function () {
+				const feedbackData = JSON.parse(localStorage.getItem("canteenFeedback")) || [];
 
-    if (feedbackData.length === 0) {
-        alert("No feedback available to download.");
-        return;
-    }
+				if (feedbackData.length === 0) {
+					alert("No feedback available to download.");
+					return;
+				}
 
-    // Convert the data to CSV format
-    let csvContent = "Date,Rating,Food Item,Reason\n";
-    feedbackData.forEach(entry => {
-        if (entry.reasons && entry.reasons.length > 0) {
-            entry.reasons.forEach(reason => {
-                csvContent += `${entry.date},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
-            });
-        } else if (entry.goodFood && entry.goodFood.length > 0) {
-            entry.goodFood.forEach(item => {
-                csvContent += `${entry.date},${entry.rating},"${item}","-"\n`;
-            });
-        }
-    });
+				// Convert the data to CSV format
+				let csvContent = "Date,Rating,Food Item,Reason\n";
+				feedbackData.forEach(entry => {
+					if (entry.reasons && entry.reasons.length > 0) {
+						entry.reasons.forEach(reason => {
+							csvContent += `${entry.date},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
+						});
+					} else if (entry.goodFood && entry.goodFood.length > 0) {
+						entry.goodFood.forEach(item => {
+							csvContent += `${entry.date},${entry.rating},"${item}","-"\n`;
+						});
+					}
+				});
 
-    // Create a blob and trigger a download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "canteen_feedback.csv";
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
+				// Create a blob and trigger a download
+				const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+				const link = document.createElement("a");
+				link.href = URL.createObjectURL(blob);
+				link.download = "canteen_feedback.csv";
+				link.style.display = "none";
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			});*/
 
 		</script>
 	</body>
