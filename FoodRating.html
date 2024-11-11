@@ -353,7 +353,7 @@
 
 		<div id="thank-you-screen" class="container hidden">
 			<h2 id="message"></h2>
-			<button id="download-feedback" onclick="downloadFeedback()">Download Feedback</button>
+			<button id="download-feedback">Download Feedback</button>
 		</div>
 
 		<div id="more-feedback-screen" class="container hidden">
@@ -404,8 +404,10 @@
 			const foodScreen = document.getElementById("food-screen");
 			const moreFeedbackScreen = document.getElementById("more-feedback-screen");
 			const ratingOptions = document.querySelectorAll(".rating-options input[type='radio']");
+			const submitFoodReasonsButton = document.getElementById("submit-food-reasons");
 			const submitGoodFeedbackButton = document.getElementById("submit-good-feedback");
 			const reasonOptions = document.querySelectorAll(".reason-options input[type='checkbox']");
+			const tableBody = document.getElementById("food-reason-table-body");
 			const messageDiv = document.getElementById("message");
 			const userIcon = document.getElementById("user-icon");
 			const customAlert = document.getElementById("custom-alert");
@@ -414,176 +416,33 @@
 			const ratingNext = document.getElementById("rating-next");
 			
 			document.addEventListener('DOMContentLoaded', function() {
-				populateGoodFoodOptions();		
-				const customAlert = document.getElementById("custom-alert"); // Ensure customAlert is hidden on load
+				populateFoodReasonTable();
+        		addCheckboxListeners();
+        		populateGoodFoodOptions();
+				//const customAlert = document.getElementById("custom-alert"); // Ensure customAlert is hidden on load
 				customAlert.classList.add("hidden"); // Confirm it remains hidden on load
 			});
 
-			document.addEventListener('DOMContentLoaded', function() {
-				populateFoodReasonTable();
-				const submitButton = document.getElementById("submit-food-reasons");
-
-				// Listen for changes in any checkbox (highlight row and enable button)
-				const reasonCheckboxes = document.querySelectorAll(".reason-checkbox");
-				document.querySelectorAll(".reason-checkbox").forEach(checkbox => {
-					checkbox.addEventListener("change", handleCheckboxChange);
-				});
-
-				function handleCheckboxChange() {
-					const row = this.closest("tr");
-					const rowHasChecked = [...row.querySelectorAll(".reason-checkbox")].some(cb => cb.checked);
-					if (rowHasChecked) {
-						row.classList.add("highlight-row");
-					} else {
-						row.classList.remove("highlight-row");
-					}
-
-					const anyChecked = [...document.querySelectorAll(".reason-checkbox")].some(cb => cb.checked);
-					document.getElementById("submit-food-reasons").disabled = !anyChecked;
-					//row.classList.remove("highlight-row");
-				}
-
-				// Populate the food reason table with food items and reasons
-				function populateFoodReasonTable() {
-					const today = new Date().toISOString().split('T')[0];
-					const dailyMenus = JSON.parse(localStorage.getItem('dailyMenus')) || {};
-					const foodItemsForToday = dailyMenus[today] || [];
-					const tableBody = document.getElementById("food-reason-table-body");
-
-					tableBody.innerHTML = ""; // Clear previous rows
-
-					foodItemsForToday.forEach(foodItem => {
-					const row = document.createElement("tr");
-
-					// Food item name cell
-					const foodNameCell = document.createElement("td");
-					foodNameCell.textContent = foodItem;
-					row.appendChild(foodNameCell);
-
-					// Reason checkboxes for each parameter
-					["Salty", "Too Spicy", "Undercooked", "Overcooked", "Not Fresh", "Too Oily"].forEach(reason => {
-						const reasonCell = document.createElement("td");
-						const reasonCheckbox = document.createElement("input");
-						reasonCheckbox.type = "checkbox";
-						reasonCheckbox.classList.add("reason-checkbox");
-						reasonCheckbox.dataset.foodItem = foodItem; // Store food item for reference
-
-						// Add event listener for checkbox change
-					reasonCheckbox.addEventListener("change", function() {
-						handleCheckboxChange.call(this);
-					});
-
-						reasonCell.appendChild(reasonCheckbox);
-						row.appendChild(reasonCell);
-					});
-
-					tableBody.appendChild(row);
-					});
-				}
-			
-				// Submit Feedback button click
-				submitButton.addEventListener("click", function() {
-					reasonCheckboxes.forEach(checkbox => checkbox.checked = false);
-					submitButton.disabled = true;
-				});
-			});
-
-			// Populate good food options for more-feedback screen
-			function populateGoodFoodOptions() {
-				const goodFoodOptionsDiv = document.getElementById("good-food-options");
-				const today = new Date().toISOString().split('T')[0];
-				const dailyMenus = JSON.parse(localStorage.getItem('dailyMenus')) || {};
-				const foodItemsForToday = dailyMenus[today] || [];
-
-				goodFoodOptionsDiv.innerHTML = ""; // Clear previous options
-
-				foodItemsForToday.forEach((item, index) => {
-					const checkbox = document.createElement('input');
-					checkbox.type = 'checkbox';
-					checkbox.id = `good-food-${index}`;
-					checkbox.value = item;
-					checkbox.classList.add("good-food-option");
-
-					const label = document.createElement('label');
-					label.htmlFor = `good-food-${index}`;
-					label.textContent = item;
-
-					goodFoodOptionsDiv.appendChild(checkbox);
-					goodFoodOptionsDiv.appendChild(label);
-					goodFoodOptionsDiv.appendChild(document.createElement("br"));
-				});
-
-				document.querySelectorAll(".good-food-option").forEach(option => {
-					option.addEventListener("change", () => {
-						document.getElementById("submit-good-feedback").disabled = !Array.from(document.querySelectorAll(".good-food-option")).some(cb => cb.checked);
-					});
-				});
+			// Helper function to append data to localStorage
+			function appendToLocalStorage(key, data) {
+				const existingData = JSON.parse(localStorage.getItem(key)) || [];
+				existingData.push(data);
+				localStorage.setItem(key, JSON.stringify(existingData));
 			}
-
-			// Function to collect selected reasons
-			document.getElementById("submit-food-reasons").addEventListener("click", () => {
-				const selectedItems = [];
-				document.querySelectorAll(".reason-checkbox:checked").forEach(checkbox => {
-					const foodName = checkbox.dataset.food;
-					const reason = checkbox.value;
-
-					let item = selectedItems.find(item => item.food === foodName);
-					if (!item) {
-					item = { food: foodName, reasons: [] };
-					selectedItems.push(item);
-					}
-					item.reasons.push(reason);
-				});
-
-				const foodOptions = document.querySelectorAll(".food-options input[type='checkbox']");
-				if (Array.from(foodOptions).some(cb => cb.checked)) {
-					foodScreen.classList.add("hidden");
-					userIcon.classList.add("hidden");
-					foodNext.disabled=false;
-				}
-				showThankYouScreen(ratingValue);    
-			});
-
-			ratingOptions.forEach(option => {
-				option.addEventListener("change", () => {
-					ratingNext.disabled = !Array.from(ratingOptions).some(radio => radio.checked);
-				});
-			});
-
-			function navigateTo(screenId) {
-				const screens = ["rating-screen", "food-screen", "more-feedback-screen"];
-				screens.forEach(screen => {
-					const screenElement = document.getElementById(screen);
-					if (screenElement) {
-					screenElement.classList.add("hidden");
-					}
-				});
-				const targetScreen = document.getElementById(screenId);
-				if (targetScreen) {
-					targetScreen.classList.remove("hidden");
-				}
-			}
-
-			moreFeedbackScreen.addEventListener("change", () => {
-				submitGoodFeedbackButton.disabled = !Array.from(moreFeedbackScreen.querySelectorAll("input[type='checkbox']")).some(cb => cb.checked);
-			});
 
 			ratingOptions.forEach(option => {
 				option.addEventListener("change", () => {
 					ratingValue = parseInt(option.value);
+					ratingNext.disabled = !Array.from(ratingOptions).some(radio => radio.checked);
+
 					if (ratingValue === 5) {
-					showCustomAlert();
+						showCustomAlert();
 					} else {
-					ratingScreen.classList.add("hidden");
-					userIcon.classList.add("hidden");
-					foodScreen.classList.remove("hidden");
+						navigateTo('food-screen');
+						userIcon.classList.add("hidden");
 					}
 				});
 			});
-
-			function showCustomAlert() {
-				customAlert.classList.add("active");
-			}
 
 			alertYesButton.addEventListener("click", () => {
 				customAlert.classList.remove("active");
@@ -597,28 +456,27 @@
 				showThankYouScreen(ratingValue);    
 			});
 
-			moreFeedbackScreen.addEventListener("change", () => {
-				submitGoodFeedbackButton.disabled = !Array.from(moreFeedbackScreen.querySelectorAll("input[type='checkbox']")).some(checkbox => checkbox.checked);
-			});
-
-			function showMoreFeedbackScreen() {
-				ratingScreen.classList.add("hidden");
-				userIcon.classList.add("hidden");
-				moreFeedbackScreen.classList.remove("hidden");
+			function showCustomAlert() {
+				customAlert.classList.add("active");
 			}
 
-			submitGoodFeedbackButton.addEventListener("click", () => {
-				showThankYouScreen(ratingValue);
-			});
-			
+			// Navigation between screens
+			function navigateTo(screenId) {
+				document.querySelectorAll(".container").forEach(screen => screen.classList.add("hidden"));
+				document.getElementById(screenId).classList.remove("hidden");
+			}
 
+			// Function to show the "more feedback" screen
+			function showMoreFeedbackScreen() {
+				navigateTo('more-feedback-screen');
+				userIcon.classList.add("hidden");
+			}
+
+			// Function to show thank you screen
 			function showThankYouScreen(ratingValue) {
 				userIcon.classList.add("hidden");
-				foodScreen.classList.add("hidden");
-				moreFeedbackScreen.classList.add("hidden");
-				thankYouScreen.classList.remove("hidden");
-				
-				
+				navigateTo('thank-you-screen');
+
 				let message = "Thank you for your feedback!";
 				if (ratingValue === 5) {
 					message = "Amazing feedback! We're glad you enjoyed it. Thank you! 😁";
@@ -631,7 +489,6 @@
 				} else if (ratingValue === 1) {
 					message = "We apologize for the experience. Thank you! 😔";
 				}
-				//messageDiv.textContent = message;
 				messageDiv.innerHTML = `<span class="emoji-message">${message}</span>`;
 
 				setTimeout(() => {
@@ -640,97 +497,159 @@
 			}
 
 			function resetForm() {
-				thankYouScreen.classList.add("hidden");
 				userIcon.classList.remove("hidden");
-				ratingScreen.classList.remove("hidden");
+				navigateTo('rating-screen');
 				ratingOptions.forEach(option => option.checked = false);
 				submitGoodFeedbackButton.disabled = true;
-				document.querySelectorAll(".food-options input[type='checkbox']").forEach(cb => cb.checked = false);
+				submitFoodReasonsButton.disabled = true;
 				document.querySelectorAll(".good-food-options input[type='checkbox']").forEach(cb => cb.checked = false);
-				document.querySelectorAll(".food-reason-options input[type='checkbox']").forEach(cb => cb.checked = false);
+				document.querySelectorAll(".reason-checkbox").forEach(cb => cb.checked = false);
 				ratingNext.disabled=true;
 			}
 
-			document.getElementById("submit-food-reasons").addEventListener("click", function() {
-				const feedback = [];
-				const rows = document.querySelectorAll("#food-reason-table tbody tr");
-				const date = new Date().toISOString().split('T')[0];
+			// Populate food reason table
+			function populateFoodReasonTable() {
+				const today = new Date().toISOString().split('T')[0];
+				const dailyMenus = JSON.parse(localStorage.getItem('dailyMenus')) || {};
+				const foodItemsForToday = dailyMenus[today] || ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
-				rows.forEach(row => {
-					const foodItem = row.cells[0].textContent;
-					const reasons = [];
-					const checkboxes = row.querySelectorAll("input[type='checkbox']");
-					
-					checkboxes.forEach((checkbox, index) => {
-					if (checkbox.checked) {
-						const header = document.querySelector(`#food-reason-table th:nth-child(${index + 2})`).textContent;
-						reasons.push(header);
-					}
+				tableBody.innerHTML = ""; // Clear previous rows
+				foodItemsForToday.forEach(foodItem => {
+					const row = document.createElement("tr");
+					const foodNameCell = document.createElement("td");
+					foodNameCell.textContent = foodItem;
+					row.appendChild(foodNameCell);
+
+					["Salty", "Too Spicy", "Undercooked", "Overcooked", "Not Fresh", "Too Oily"].forEach(reason => {
+						const reasonCell = document.createElement("td");
+						const reasonCheckbox = document.createElement("input");
+						reasonCheckbox.type = "checkbox";
+						reasonCheckbox.classList.add("reason-checkbox");
+						reasonCheckbox.dataset.foodItem = foodItem;
+						reasonCheckbox.value = reason;
+
+						reasonCell.appendChild(reasonCheckbox);
+						row.appendChild(reasonCell);
+					});
+					tableBody.appendChild(row);
+				});
+    		}
+
+			// Add event listeners to reason checkboxes to enable/disable the submit button
+			function addCheckboxListeners() {
+				const reasonCheckboxes = document.querySelectorAll(".reason-checkbox");
+				
+				reasonCheckboxes.forEach(checkbox => {
+					checkbox.addEventListener("change", () => {
+						// Check if at least one checkbox is checked
+						const isAnyCheckboxChecked = Array.from(reasonCheckboxes).some(cb => cb.checked);
+						submitFoodReasonsButton.disabled = !isAnyCheckboxChecked;
+					});
+				});
+
+				// Event listener for the submit button
+				submitFoodReasonsButton.addEventListener("click", () => {
+					const selectedReasons = [];
+
+					document.querySelectorAll(".reason-checkbox:checked").forEach(checkbox => {
+						selectedReasons.push({
+							foodItem: checkbox.dataset.foodItem,
+							reason: checkbox.value
+						});
 					});
 
-					if (reasons.length > 0) {
-					feedback.push({ date, foodItem, reasons });
-					}
+					// Append to localStorage
+					const feedbackData = {
+						date: new Date().toISOString().split('T')[0],
+						rating: ratingValue,
+						reasons: selectedReasons
+					};
+
+					appendToLocalStorage('canteenFeedback', feedbackData);
+
+					// Show thank you screen
+					showThankYouScreen(ratingValue);
 				});
-
-				// Store in localStorage
-				localStorage.setItem('feedbackData', JSON.stringify(feedback));
-
-				// Prepare data for Excel
-				const worksheetData = [['Date','Food Item', 'Reasons']];
-				feedback.forEach(item => {
-					worksheetData.push([item.date, item.foodItem, item.reasons.join(', ')]);
-				});
-
-				// Convert to Excel and download
-				createExcelFile(worksheetData);
-			});
-
-			function createExcelFile(data) {
-				const worksheet = XLSX.utils.aoa_to_sheet(data);
-				const workbook = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
-				XLSX.writeFile(workbook, `Canteen_Feedback_${new Date().toISOString().split('T')[0]}.xlsx`);
 			}
 
-			// Submit Good Feedback button click handler
-			submitGoodFeedbackButton.addEventListener("click", function() {
-				const selectedGoodFoods = [];
-				const checkboxes = document.querySelectorAll('.good-food-options input[type="checkbox"]');
+			// Populate good food options based on menu
+			function populateGoodFoodOptions() {
+				const goodFoodOptionsDiv = document.getElementById("good-food-options");
+				const today = new Date().toISOString().split('T')[0];
+				const dailyMenus = JSON.parse(localStorage.getItem('dailyMenus')) || {};
+				const foodItemsForToday = dailyMenus[today] || ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
-				checkboxes.forEach(checkbox => {
-					if (checkbox.checked) {
-					selectedGoodFoods.push(checkbox.value);
-					}
+				goodFoodOptionsDiv.innerHTML = ""; // Clear previous options
+				foodItemsForToday.forEach((item, index) => {
+					const checkbox = document.createElement('input');
+					checkbox.type = 'checkbox';
+					checkbox.id = `good-food-${index}`;
+					checkbox.value = item;
+					checkbox.classList.add("good-food-option");
+					const label = document.createElement('label');
+					label.htmlFor = `good-food-${index}`;
+					label.textContent = item;
+					goodFoodOptionsDiv.appendChild(checkbox);
+					goodFoodOptionsDiv.appendChild(label);
+					goodFoodOptionsDiv.appendChild(document.createElement("br"));
 				});
 
-				// Store selected good food items in localStorage
-				localStorage.setItem('goodFoodFeedback', JSON.stringify(selectedGoodFoods));
-
-				// Generate Excel data
-				downloadGoodFoodFeedbackExcel(selectedGoodFoods);
-
-				// Reset checkboxes and disable button
-				checkboxes.forEach(checkbox => (checkbox.checked = false));
-				submitGoodFeedbackButton.disabled = true;
-			});
-
-			// Function to download selected good food feedback as an Excel file
-			function downloadGoodFoodFeedbackExcel(goodFoodItems) {
-				const worksheet = XLSX.utils.aoa_to_sheet([['Good Food Items'], ...goodFoodItems.map(item => [item])]);
-				const workbook = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(workbook, worksheet, 'GoodFoodFeedback');
-
-				// Generate Excel file and trigger download
-				XLSX.writeFile(workbook, `Good_Food_Feedback_${new Date().toISOString().split('T')[0]}.xlsx`);
+				document.querySelectorAll(".good-food-option").forEach(option => {
+					option.addEventListener("change", () => {
+						submitGoodFeedbackButton.disabled = !Array.from(document.querySelectorAll(".good-food-option")).some(cb => cb.checked);
+					});
+				});
 			}
-
-			// Listen for checkbox changes to enable the submit button
-			document.querySelectorAll('.good-food-options input[type="checkbox"]').forEach(checkbox => {
-				checkbox.addEventListener('change', function() {
-					submitGoodFeedbackButton.disabled = ![...document.querySelectorAll('.good-food-options input[type="checkbox"]')].some(cb => cb.checked);
+		
+			// Submit button for good food feedback
+			submitGoodFeedbackButton.addEventListener("click", () => {
+				const selectedItems = [];
+				document.querySelectorAll(".good-food-option:checked").forEach(checkbox => {
+					selectedItems.push(checkbox.value);
 				});
+
+				const feedback = {
+					date: new Date().toISOString().split('T')[0],
+					rating: ratingValue,
+					goodFood: selectedItems
+				};
+
+				appendToLocalStorage('canteenFeedback', feedback);
+				showThankYouScreen(ratingValue);
 			});
+
+			document.getElementById("download-feedback").addEventListener("click", function () {
+    const feedbackData = JSON.parse(localStorage.getItem("canteenFeedback")) || [];
+
+    if (feedbackData.length === 0) {
+        alert("No feedback available to download.");
+        return;
+    }
+
+    // Convert the data to CSV format
+    let csvContent = "Date,Rating,Food Item,Reason\n";
+    feedbackData.forEach(entry => {
+        if (entry.reasons && entry.reasons.length > 0) {
+            entry.reasons.forEach(reason => {
+                csvContent += `${entry.date},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
+            });
+        } else if (entry.goodFood && entry.goodFood.length > 0) {
+            entry.goodFood.forEach(item => {
+                csvContent += `${entry.date},${entry.rating},"${item}","-"\n`;
+            });
+        }
+    });
+
+    // Create a blob and trigger a download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "canteen_feedback.csv";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
 		</script>
 	</body>
