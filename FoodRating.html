@@ -249,7 +249,7 @@
 			}
 
 			.highlight-row {
-				background-color: #52abff; /* Light blue color */
+    			background-color: #9dd8ef; /* Light teal/cyan color */
 			}
 
 			/* Checkbox Styling */
@@ -418,7 +418,6 @@
 				populateFoodReasonTable();
         		addCheckboxListeners();
         		populateGoodFoodOptions();
-				//const customAlert = document.getElementById("custom-alert"); // Ensure customAlert is hidden on load
 				customAlert.classList.add("hidden"); // Confirm it remains hidden on load
 			});
 
@@ -452,7 +451,18 @@
 				customAlert.classList.remove("active");
 				ratingScreen.classList.add("hidden");
 				userIcon.classList.add("hidden");
-				showThankYouScreen(ratingValue);    
+
+				// Get the rating value (assuming ratingValue is already set when the user selects a rating)
+				const feedbackData = {
+        			date: new Date().toISOString().split('T')[0],  // Current date in YYYY-MM-DD format
+        			rating: ratingValue,
+        			goodFood: "-"  // Default value when the user clicks "No"
+    			};
+
+				// Append the feedback data to localStorage
+				appendToLocalStorage('canteenFeedback', feedbackData);
+
+				showThankYouScreen(ratingValue);  // Show the thank you screen
 			});
 
 			function showCustomAlert() {
@@ -540,6 +550,18 @@
 				
 				reasonCheckboxes.forEach(checkbox => {
 					checkbox.addEventListener("change", () => {
+						const row = checkbox.closest("tr"); // Get the parent row of the checkbox
+					
+						// Check if any checkbox in the same row is checked
+						const isAnyCheckboxCheckedInRow = Array.from(row.querySelectorAll("input[type='checkbox']")).some(cb => cb.checked);
+
+						// Toggle highlight-row class based on the row's checkbox states
+						if (isAnyCheckboxCheckedInRow) {
+							row.classList.add("highlight-row");
+						} else {
+							row.classList.remove("highlight-row");
+						}
+
 						// Check if at least one checkbox is checked
 						const isAnyCheckboxChecked = Array.from(reasonCheckboxes).some(cb => cb.checked);
 						submitFoodReasonsButton.disabled = !isAnyCheckboxChecked;
@@ -565,6 +587,12 @@
 					};
 
 					appendToLocalStorage('canteenFeedback', feedbackData);
+
+					// Remove highlight from all rows
+					const allRows = document.querySelectorAll("#food-reason-table tbody tr");
+					allRows.forEach(row => {
+						row.classList.remove("highlight-row");
+					});
 
 					// Show thank you screen
 					showThankYouScreen(ratingValue);
@@ -616,40 +644,6 @@
 				appendToLocalStorage('canteenFeedback', feedback);
 				showThankYouScreen(ratingValue);
 			});
-
-			/*document.getElementById("download-feedback").addEventListener("click", function () {
-				const feedbackData = JSON.parse(localStorage.getItem("canteenFeedback")) || [];
-
-				if (feedbackData.length === 0) {
-					alert("No feedback available to download.");
-					return;
-				}
-
-				// Convert the data to CSV format
-				let csvContent = "Date,Rating,Food Item,Reason\n";
-				feedbackData.forEach(entry => {
-					if (entry.reasons && entry.reasons.length > 0) {
-						entry.reasons.forEach(reason => {
-							csvContent += `${entry.date},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
-						});
-					} else if (entry.goodFood && entry.goodFood.length > 0) {
-						entry.goodFood.forEach(item => {
-							csvContent += `${entry.date},${entry.rating},"${item}","-"\n`;
-						});
-					}
-				});
-
-				// Create a blob and trigger a download
-				const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-				const link = document.createElement("a");
-				link.href = URL.createObjectURL(blob);
-				link.download = "canteen_feedback.csv";
-				link.style.display = "none";
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			});*/
-
 		</script>
 	</body>
 </html>
