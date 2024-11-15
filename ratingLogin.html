@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    	<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/shim.min.js"></script>
+    	<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
   <title>Login</title>
   <style>
     /* Reset and base styles */
@@ -84,6 +88,8 @@
   </style>
 </head>
 <body>
+  <button id="rating-next" onclick="redirectToHome" style="position: relative; left: 20px; top: 30px;" disabled><i class="fa-solid fa-angle-right"></i></button>
+
   <div class="login-container">
     <h2>Login</h2>
     <div class="form-row">
@@ -103,7 +109,7 @@
       const password = document.getElementById('password').value.trim();
 
       // Dummy credentials check (replace this with your actual login logic)
-      if (username === "manager" && password === "pass") {
+      if (username === "admin" && password === "pass") {
         alert("Login successful!");
         // Redirect to menu management page (menuManagement.html)
         window.location.href = "menu.html";
@@ -111,6 +117,7 @@
         alert("Invalid username or password.");
       }
     }
+    
   </script>
 </body>
 </html>

@@ -69,14 +69,14 @@
 			}
 
 			.emoji-label:hover {
-				transform: scale(1.5);
+				transform: scale(1.2);
 				background-color: #007bff;
-				width: 100px;
+				width: 140px;
 				border-radius: 80%;
 			}
 
 			.rating-options input[type="radio"]:checked + .emoji-label {
-				transform: scale(1.5);
+				transform: scale(1.2);
 				background-color: #005BAB;
 				border-radius: 80%;
 			}
@@ -84,6 +84,10 @@
 			#thank-you-screen h2 {
 				font-size: 40px;
 				margin-top: 10px;
+			}
+
+			#food-screen {
+				max-height: 650px;
 			}
 
 			.good-food-options {
@@ -99,17 +103,17 @@
 				max-height: 450px;
 			}
 
-			.good-food-options::-webkit-scrollbar {
+			.good-food-options::-webkit-scrollbar, .food-table::-webkit-scrollbar {
 				height: 5px;
 				width: 8px;
 			}
 
-			.good-food-options::-webkit-scrollbar-thumb {
+			.good-food-options::-webkit-scrollbar-thumb, .food-table::-webkit-scrollbar-thumb {
 				background-color: #007bff;
 				border-radius: 8px;
 			}
 
-			.good-food-options::-webkit-scrollbar-track {
+			.good-food-options::-webkit-scrollbar-track, .food-table::-webkit-scrollbar-track {
 				background-color: #f8f9fa;
 			}
 
@@ -128,8 +132,8 @@
 			}
 
 			.good-food-options input[type="checkbox"] {
-				width: 20px;
-				height: 20px;
+				width: 25px;
+				height: 25px;
 				cursor: pointer;
 				transform: scale(1.2);
 				position: relative;
@@ -225,6 +229,11 @@
 				left: 1040px;
 			}
 
+			.food-table {
+				overflow-y: scroll;
+				max-height: 600px;
+			}
+
 			/* Table Styling */
 			#food-reason-table {
 				width: 100%;
@@ -255,8 +264,8 @@
 
 			/* Checkbox Styling */
 			input[type="checkbox"] {
-				width: 20px;
-				height: 20px;
+				width: 25px;
+				height: 25px;
 				cursor: pointer;
 				transform: scale(1.2);
 				position: relative;
@@ -299,7 +308,7 @@
 				}
 				#rating-next {
 					position: relative;
-					left: 525px;
+					left: 425px;
 					width: 10px;
 				}  
 			}
@@ -340,15 +349,15 @@
 
 			<div class="rating-options">
 				<input type="radio" name="rating" id="rate-5" value="5">
-				<label for="rate-5" class="emoji-label"><img src="images/5.png" alt="" style="margin-top: 12px;" width="90px" height="90px"></label>
+				<label for="rate-5" class="emoji-label"><img src="images/5.png" alt="" style="margin-top: 12px;" width="120px" height="120px"></label>
 				<input type="radio" name="rating" id="rate-4" value="4">
-				<label for="rate-4" class="emoji-label"><img src="images/4.png" alt="" style="margin-top: 12px;" width="90px" height="90px"></label>
+				<label for="rate-4" class="emoji-label"><img src="images/4.png" alt="" style="margin-top: 12px;" width="120px" height="120px"></label>
 				<input type="radio" name="rating" id="rate-3" value="3">
-				<label for="rate-3" class="emoji-label"><img src="images/3.png" alt="" style="margin-top: 12px;" width="90px" height="90px"></label>
+				<label for="rate-3" class="emoji-label"><img src="images/3.png" alt="" style="margin-top: 12px;" width="120px" height="120px"></label>
 				<input type="radio" name="rating" id="rate-2" value="2">
-				<label for="rate-2" class="emoji-label"><img src="images/2.png" alt="" style="margin-top: 12px;" width="90px" height="90px"></label>
+				<label for="rate-2" class="emoji-label"><img src="images/2.png" alt="" style="margin-top: 12px;" width="120px" height="120px"></label>
 				<input type="radio" name="rating" id="rate-1" value="1">
-				<label for="rate-1" class="emoji-label"><img src="images/1.png" alt="" style="margin-top: 12px;" width="90px" height="90px"></label>
+				<label for="rate-1" class="emoji-label"><img src="images/1.png" alt="" style="margin-top: 12px;" width="120px" height="120px"></label>
 			</div>
 		</div>
 
@@ -370,21 +379,23 @@
 			<div class="nav-buttons-container">
 				<button id="food-back" onclick="navigateTo('rating-screen')"><i class="fas fa-angle-left"></i></button>
 			</div>
-			<table id="food-reason-table" class="food-reason-table">
-				<thead>
-				<tr>
-					<th>Food Item</th>
-					<th>Salty</th>
-					<th>Too Spicy</th>
-					<th>Undercooked</th>
-					<th>Overcooked</th>
-					<th>Not Fresh</th>
-					<th>Too Oily</th>
-				</tr>
-				</thead>
-				<tbody id="food-reason-table-body">
-				</tbody>
-			</table>
+			<div class="food-table">
+				<table id="food-reason-table" class="food-reason-table">
+					<thead>
+					<tr>
+						<th>Food Item</th>
+						<th>Salty</th>
+						<th>Too Spicy</th>
+						<th>Undercooked</th>
+						<th>Overcooked</th>
+						<th>Not Fresh</th>
+						<th>Too Oily</th>
+					</tr>
+					</thead>
+					<tbody id="food-reason-table-body" class="food-reason-table-body">
+					</tbody>
+				</table>
+			</div>
 			<button id="submit-food-reasons" disabled>Submit Feedback</button>
 		</div>
 
