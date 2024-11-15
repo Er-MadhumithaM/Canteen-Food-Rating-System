@@ -78,6 +78,7 @@
 			.rating-options input[type="radio"]:checked + .emoji-label {
 				transform: scale(1.2);
 				background-color: #005BAB;
+				width: 140px;
 				border-radius: 80%;
 			}
 
@@ -135,7 +136,7 @@
 				width: 25px;
 				height: 25px;
 				cursor: pointer;
-				transform: scale(1.2);
+				transform: scale(1.9);
 				position: relative;
 				left: 60px;
 				top: 29px;
@@ -231,27 +232,31 @@
 
 			.food-table {
 				overflow-y: scroll;
-				max-height: 600px;
+				max-height: 350px;
+				border: 1px solid #ddd;
 			}
 
 			/* Table Styling */
 			#food-reason-table {
 				width: 100%;
-				margin-top: 20px;
 				border-collapse: collapse;
 			}
 
-			#food-reason-table th, #food-reason-table td {
+			#food-reason-table td {
 				padding: 10px;
-				border: 1px solid #ddd;
-				text-align: center;
 			}
 
 			#food-reason-table th {
 				background-color: #007bff;
+				position: sticky;
+				top: 0;
 				color: #ffffff;
+				padding: 20px;
+				border: 1px solid #ddd;
+				text-align: center;
 				font-weight: bold;
-				font-size: 16px;
+				font-size: 20px;
+				z-index: 12;
 			}
 
 			#food-reason-table td {
@@ -593,7 +598,8 @@
 
 					// Append to localStorage
 					const feedbackData = {
-						date: new Date().toISOString().split('T')[0],
+						//timestamp: new Date().toISOString().split('T')[0],
+						timestamp: new Date().toISOString(),
 						rating: ratingValue,
 						reasons: selectedReasons
 					};
@@ -648,7 +654,7 @@
 				});
 
 				const feedback = {
-					date: new Date().toISOString().split('T')[0],
+					timestamp: new Date().toISOString(),
 					rating: ratingValue,
 					goodFood: selectedItems
 				};

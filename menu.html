@@ -444,11 +444,11 @@
 			feedbackData.forEach(entry => {
 				if (entry.reasons && entry.reasons.length > 0) {
 					entry.reasons.forEach(reason => {
-						csvContent += `${entry.date},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
+						csvContent += `${entry.timestamp},${entry.rating},"${reason.foodItem}","${reason.reason}"\n`;
 					});
 				} else if (Array.isArray(entry.goodFood) && entry.goodFood.length > 0) {
 					entry.goodFood.forEach(item => {
-						csvContent += `${entry.date},${entry.rating},"${item}","-"\n`;
+						csvContent += `${entry.timestamp},${entry.rating},"${item}","-"\n`;
 					});
 				}
 			});
